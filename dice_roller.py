@@ -22,7 +22,7 @@ def roll_dice():
         die1 = random.randint(1, 6)
         die2 = random.randint(1, 6)
         total = die1 + die2
-        print(f"You rollled: {die1}, {die2}. Your total is {total}")
+        print(f"You rolled: {die1}, {die2}. Your total is {total}")
     else:
         print("Decide if you wanna play or not") 
 rounds = 1
