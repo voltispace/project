@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+    <style>
+        /* --- CSS Styles --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100;
+            margin: 0;
+        }
+
+        .game-container {
+            background-color: white;
+            padding: 2;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 350px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p.instruction {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            width: 60px;
+            text-align: center;
+        }
+
+        /* Chrome, Safari, Edge, Opera - hide spin buttons */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745; /* Green like ANSI 32 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .message {
+            font-weight: bold;
+            margin-top: 1rem;
+            min-height: 1.5rem;
+        }
+
+        .msg-normal { color: #333; }
+        .msg-error { color: #dc3545; } /* Red */
+        .msg-success { color: #28a745; } /* Green */
+
+        .stats {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Welcome to number guessing GAME</h1>
+        <p class="instruction">Guess a number between 1 and 10.</p>
+
+        <div class="input-group">
+            <input type="number" id="guessInput" min="1" max="10" autocomplete="off">
+            <button id="submitBtn">Guess</button>
+        </div>
+
+        <!-- Area to display feedback messages -->
+        <p id="messageArea" class="message msg-normal"></p>
+
+        <!-- Area to display attempts remaining -->
+        <p id="statsArea" class="stats">Attempts remaining: 5</p>
+    </div>
+
+    <script>
+        /* --- JavaScript Logic (translating Python) --- */
+
+        // 1. Initialize variables (equivalent to Python setup)
+        // generate random number between 1 and 10 (inclusive)
+        let targetNumber = Math.floor(Math.random() * 10) + 1; 
+        let attemptsLeft = 5;
+        let isGameOver = false;
+
+        // 2. DOM Elements (connecting JS to HTML)
+        const guessInput = document.getElementById('guessInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const messageArea = document.getElementById('messageArea');
+        const statsArea = document.getElementById('statsArea');
+
+        // Focus input box on load
+        guessInput.focus();
+
+        // 3. Function to handle the game logic (equivalent to the while loop body)
+        function checkGuess() {
+            if (isGameOver) return;
+
+            // Get value from input field
+            const guessStr = guessInput.value;
+
+            // Clear previous input
+            guessInput.value = '';
+            guessInput.focus();
+
+            // --- Validation (equivalent to try-except ValueError) ---
+            // Check if empty or not a number
+            if (guessStr === "" || isNaN(guessStr)) {
+                showMessage("only numbers needed", 'error');
+                return;
+            }
+
+            // Convert to integer
+            const guess = parseInt(guessStr);
+
+            // Check range (optional, but good UI practice)
+            if (guess < 1 || guess > 10) {
+                showMessage("Please enter a number between 1 and 10.", 'error');
+                return;
+            }
+
+            // --- Game Logic (equivalent to if/elif chain) ---
+            attemptsLeft--;
+
+            if (guess === targetNumber) {
+                endGame(`Congratulations you got it! The number was ${targetNumber}.`, 'success');
+            } else if (attemptsLeft === 0) {
+                endGame(`You have exhausted your trys. The number was ${targetNumber}.`, 'error');
+            } else if (guess < targetNumber) {
+                showMessage("Too low try again", 'normal');
+            } else if (guess > targetNumber) {
+                showMessage("Too high keep trying", 'normal');
+            }
+
+            // Update remaining attempts display
+            statsArea.textContent = `Attempts remaining: ${attemptsLeft}`;
+        }
+
+        // Helper function to update messages with colors
+        function showMessage(text, type) {
+            messageArea.textContent = text;
+            // Remove existing classes and add new one based on type
+            messageArea.className = `message msg-${type}`;
+        }
+
+        // Helper function to end the game and disable input
+        function endGame(text, type) {
+            showMessage(text, type);
+            isGameOver = true;
+            guessInput.disabled = true;
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Over";
+        }
+
+        // 4. Event Listeners
+        // Handle click on button
+        submitBtn.addEventListener('click', checkGuess);
+
+        // Handle "Enter" key inside the input box
+        guessInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                checkGuess();
+            }
+        });
+    </script>
+</body>
+</html>
+
